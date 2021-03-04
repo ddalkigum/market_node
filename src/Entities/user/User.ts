@@ -11,7 +11,7 @@ class User extends TimeStamp {
   @Column({ type: 'varchar', length: 45, unique: true })
   email: string;
 
-  @Column({ type: 'varchar', length: 120 })
+  @Column({ type: 'varchar', length: 120, nullable: true })
   password: string;
 
   @Column({ type: 'varchar', length: 45, nullable: true })

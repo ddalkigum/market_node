@@ -4,7 +4,8 @@ import { ProductController } from '../Controllers';
 
 const router = Router();
 
-router.post('', ProductGroupController.createBulkProductGroup);
+router.post('/bulk', ProductGroupController.createBulkProductGroup);
+router.post('', ProductGroupController.createProductGroup);
 router.get('', ProductGroupController.getProductGroupList);
 router.post('/product', ProductController.createProduct);
 

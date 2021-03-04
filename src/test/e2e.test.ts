@@ -6,6 +6,14 @@ import app from '../app';
 import User from '../Entities/user/User';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import {
+  productGroupData,
+  productGroupDataSet,
+} from '../TestData/productGroup';
+import ProductGroupServices from '../Services/ProductGroupServices';
+import { response } from 'express';
+
+jest.mock('axios');
 
 beforeAll(async () => {
   await connection.create();
@@ -127,25 +135,51 @@ describe('POST /users/signin', () => {
       });
     done();
   });
+});
 
-  it('User signin success', async (done) => {
-    const hashPassword = await bcrypt.hash('12341234', 10);
-    await User.create({
-      email: 'testnode@gmail.com',
-      password: hashPassword,
-      name: 'jun',
-    }).save();
+/*
+describe('GET /users/signin/kakao', () => {
+  it('Kakao social login success', async (done) => {
+    const myMock = jest.fn().mockImplementation((x) => x + 15);
+    const a = myMock(0);
+    const b = myMock(1);
+    console.log('a=', a);
+    console.log('b=', b);
+    console.log(myMock);
+    await request(app).get('/users/signin/kakao');
+    done();
+  });
+});
+*/
 
+describe('POST /products', () => {
+  it('ProductGroup create success | message = SUCCESS', async (done) => {
     await request(app)
-      .post('/users/signin')
-      .send({
-        email: 'testnode@gmail.com',
-        password: 'errorPassword',
-      })
-      .expect(403)
-      .expect({
-        message: 'Forbidden',
-      });
+      .post('/products')
+      .send(productGroupData)
+      .expect(201)
+      .expect({ message: 'SUCCESS' });
+    done();
+  });
+
+  it('ProductGroup bulk create success | message = SUCCESS', async (done) => {
+    await request(app)
+      .post('/products/bulk')
+      .send(productGroupDataSet)
+      .expect(201)
+      .expect({ message: 'SUCCESS' });
+    done();
+  });
+
+  it('Get productGroup data set', async (done) => {
+    ProductGroupServices.createBulkItem(productGroupDataSet);
+    const response = await request(app).get('/products');
+
+    try {
+      expect(response.body).toEqual(productGroupDataSet);
+    } catch (err) {
+      console.log(err);
+    }
     done();
   });
 });

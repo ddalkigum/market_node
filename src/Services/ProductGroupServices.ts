@@ -101,6 +101,10 @@ const createBulkItem = (data: CreateProductGroupInput[]) => {
   });
 };
 
+const createItem = async (data: CreateProductGroupInput) => {
+  await ProductGroup.create(data).save();
+};
+
 const updateItem = async (data) => {
   const { itemId } = data;
   await ProductGroup.update({ id: itemId }, { ...data });
@@ -111,4 +115,4 @@ const deleteItem = async (data) => {
   await ProductGroup.delete({ id: itemId });
 };
 
-export default { getItems, updateItem, deleteItem, createBulkItem };
+export default { getItems, updateItem, deleteItem, createBulkItem, createItem };

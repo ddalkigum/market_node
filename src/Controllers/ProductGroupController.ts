@@ -14,6 +14,14 @@ const createBulkProductGroup = errorWrapper(
   },
 );
 
+const createProductGroup = errorWrapper(
+  async (request: Request, response: Response) => {
+    const { ...data } = request.body;
+    await ProductGroupServices.createItem(data);
+    response.status(201).json({ message: 'SUCCESS' });
+  },
+);
+
 const getProductGroupList = errorWrapper(
   async (request: Request, response: Response) => {
     const { ...data }: filter = request.query;
@@ -44,6 +52,7 @@ const deleteProductGroup = errorWrapper(
 
 export default {
   createBulkProductGroup,
+  createProductGroup,
   getProductGroupList,
   updateProductGroup,
   deleteProductGroup,

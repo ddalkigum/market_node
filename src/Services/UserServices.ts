@@ -8,13 +8,13 @@ export interface UserFind {
 
 export interface UserCreateInput {
   email: string;
-  password: string;
+  password?: string;
   name?: string;
 }
 
 export interface UserSignInInput {
   email: string;
-  password: string;
+  password?: string;
 }
 
 const findUser = async (data: UserFind) => {

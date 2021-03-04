@@ -15,14 +15,15 @@ const devConnectionOption: ConnectionOptions = {
   entities: [__dirname + '/Entities/**/*.*'],
 };
 
-export const testConnectionOption: ConnectionOptions = {
+const testConnectionOption: ConnectionOptions = {
   type: 'mysql',
-  host: 'localhost',
-  password: '1234',
-  username: 'root',
-  database: 'test_sua',
+  host: process.env.TEST_HOST,
+  password: process.env.TEST_PASSWORD,
+  username: process.env.TEST_USER,
+  database: process.env.TEST_NAME,
   synchronize: true,
   port: 3306,
   entities: [__dirname + '/Entities/**/*.*'],
 };
-export default { devConnectionOption };
+
+export default { devConnectionOption, testConnectionOption };

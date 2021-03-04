@@ -1,9 +1,9 @@
 import { createConnection, getConnection } from 'typeorm';
-import { testConnectionOption } from './ormConfig';
+import ormConfig from './ormConfig';
 
 const connection = {
   async create() {
-    await createConnection(testConnectionOption);
+    await createConnection(ormConfig.testConnectionOption);
   },
 
   async close() {
