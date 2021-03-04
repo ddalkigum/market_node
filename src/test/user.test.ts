@@ -1,6 +1,11 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import connection from '../connection';
 import request from 'supertest';
 import app from '../app';
+import User from '../Entities/user/User';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 beforeAll(async () => {
   await connection.create();
@@ -9,7 +14,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await connection.close();
-  console.log('TEST DB CLOSED');
+  console.log('TEST DB CLEAR');
 });
 
 beforeEach(async () => {
@@ -18,11 +23,11 @@ beforeEach(async () => {
 });
 
 describe('POST /users/signup', () => {
-  it('User signup success', async (done) => {
+  it('User signup success | message = SUCCESS', async (done) => {
     await request(app)
       .post('/users/signup')
       .send({
-        email: 'testmarket@gmail.com',
+        email: 'testmarket2@gmail.com',
         password: '12341234',
         name: 'jun',
       })
@@ -31,7 +36,28 @@ describe('POST /users/signup', () => {
     done();
   });
 
-  it('User signup fail - KEY_ERROR', async (done) => {
+  it('User signup error | error message = ALREADY_EXIST', async (done) => {
+    await User.create({
+      email: 'testmarket@gmail.com',
+      password: '12341234',
+      name: 'jun',
+    }).save();
+
+    await request(app)
+      .post('/users/signup')
+      .send({
+        email: 'testmarket@gmail.com',
+        password: '12341234',
+        name: 'jun',
+      })
+      .expect(401)
+      .expect({
+        message: 'ALREADY_EXIST',
+      });
+    done();
+  });
+
+  it('User signup error | error message = KEY_ERROR', async (done) => {
     await request(app)
       .post('/users/signup')
       .send({
@@ -41,6 +67,85 @@ describe('POST /users/signup', () => {
       })
       .expect(401)
       .expect({ message: 'KEY_ERROR' });
+    done();
+  });
+
+  it('User signup error | error message = KEY_ERROR', async (done) => {
+    await request(app)
+      .post('/users/signup')
+      .send({
+        e: 'testmarket@gmail.com',
+        password: '12341234',
+        name: 'jun',
+      })
+      .expect(401)
+      .expect({ message: 'KEY_ERROR' });
+    done();
+  });
+});
+
+describe('POST /users/signin', () => {
+  it('User signin success', async (done) => {
+    const hashPassword = await bcrypt.hash('12341234', 10);
+    const user = await User.create({
+      email: 'testnode@gmail.com',
+      password: hashPassword,
+      name: 'jun',
+    }).save();
+    const token = jwt.sign({ id: user.id }, process.env.SECRET);
+    await request(app)
+      .post('/users/signin')
+      .send({
+        email: 'testnode@gmail.com',
+        password: '12341234',
+      })
+      .expect(200)
+      .expect({
+        message: 'SUCCESS',
+        Authorization: token,
+      });
+    done();
+  });
+
+  it('User signin error | error message = ', async (done) => {
+    const hashPassword = await bcrypt.hash('12341234', 10);
+    await User.create({
+      email: 'testnode@gmail.com',
+      password: hashPassword,
+      name: 'jun',
+    }).save();
+
+    await request(app)
+      .post('/users/signin')
+      .send({
+        email: 'errornode@gmail.com',
+        password: '12341234',
+      })
+      .expect(403)
+      .expect({
+        message: 'Forbidden',
+      });
+    done();
+  });
+
+  it('User signin success', async (done) => {
+    const hashPassword = await bcrypt.hash('12341234', 10);
+    await User.create({
+      email: 'testnode@gmail.com',
+      password: hashPassword,
+      name: 'jun',
+    }).save();
+
+    await request(app)
+      .post('/users/signin')
+      .send({
+        email: 'testnode@gmail.com',
+        password: 'errorPassword',
+      })
+      .expect(403)
+      .expect({
+        message: 'Forbidden',
+      });
     done();
   });
 });

@@ -34,10 +34,9 @@ const signUp = errorWrapper(async (request: Request, response: Response) => {
 const signIn = errorWrapper(async (request: Request, response: Response) => {
   const { email, password }: UserSignInInput = request.body;
   const user = await UserServices.findUser({ email });
-
   if (!user) errorGenerator({ statusCode: 403 });
 
-  const checkPassword = bcrypt.compare(password, user.password);
+  const checkPassword = await bcrypt.compare(password, user.password);
   if (!checkPassword) errorGenerator({ statusCode: 403 });
 
   const token = jwt.sign({ id: user.id }, process.env.SECRET);
