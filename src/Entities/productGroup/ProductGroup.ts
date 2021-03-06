@@ -29,14 +29,11 @@ class ProductGroup extends TimeStamp {
   @OneToMany((type) => Product, (product) => product.productGroup)
   product: Product;
 
-  @ManyToOne(
+  @OneToMany(
     (type) => CategoryProduct,
     (categoryProduct) => categoryProduct.productGroup,
   )
-  categoryProduct: CategoryProduct[];
-
-  @Column({ default: 1 })
-  categoryId: number;
+  categoryProduct: CategoryProduct;
 }
 
 export default ProductGroup;

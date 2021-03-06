@@ -15,7 +15,7 @@ export interface CreateProductGroupInput {
 
 export interface filter {
   search?: string;
-  page?: string;
+  page?: string | number;
   sort?: string;
 }
 
@@ -44,11 +44,16 @@ const selectObject = (arr: sortInput[], word: string) => {
   return sortObject;
 };
 
-const getItems = async (data: filter) => {
-  let pageNumber = Number(data.page);
+const getItems = async (data?: filter) => {
+  //if (data.page === undefined || data.page < 0) {
+  //  let pageNumber = 1;
+  //  return pageNumber;
+  //}
+
+  let pageNumber = 1;
+
   const filterObject = selectObject(sortList, data.sort);
   if (pageNumber < 0 || isNaN(pageNumber)) pageNumber = 1;
-  console.log(typeof data.search);
 
   const limit = pageNumber * PAGE_SIZE;
 

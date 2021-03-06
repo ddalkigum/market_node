@@ -12,6 +12,8 @@ import {
 } from '../TestData/productGroup';
 import ProductGroupServices from '../Services/ProductGroupServices';
 import { response } from 'express';
+import Category from '../Entities/category/Category';
+import ProductGroup from '../Entities/productGroup/ProductGroup';
 
 jest.mock('axios');
 
@@ -173,13 +175,13 @@ describe('POST /products', () => {
 
   it('Get productGroup data set', async (done) => {
     ProductGroupServices.createBulkItem(productGroupDataSet);
-    const response = await request(app).get('/products');
 
-    try {
-      expect(response.body).toEqual(productGroupDataSet);
-    } catch (err) {
-      console.log(err);
-    }
+    const response = await request(app)
+      .get('/products')
+      .query({ sort: 'recently' });
+    console.log(response);
+    const productGroupDatas = await ProductGroupServices.getItems();
+    expect(response.body).toEqual(productGroupDatas);
     done();
   });
 });
